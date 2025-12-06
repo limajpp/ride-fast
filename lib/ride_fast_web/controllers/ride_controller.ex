@@ -10,13 +10,21 @@ defmodule RideFastWeb.RideController do
 
   def create(conn, %{"ride" => ride_params}) do
     current_user = Guardian.Plug.current_resource(conn)
-
     ride_params = Map.put(ride_params, "user_id", current_user.id)
 
-    with {:ok, %Ride{} = ride} <- Rides.create_ride(ride_params) do
-      conn
-      |> put_status(:created)
-      |> render(:show, ride: ride)
+    case Rides.create_ride(ride_params) do
+      {:ok, %Ride{} = ride} ->
+        conn
+        |> put_status(:created)
+        |> render(:show, ride: ride)
+
+      {:error, :user_has_active_ride} ->
+        conn
+        |> put_status(:conflict)
+        |> json(%{error: "You already have an active ride request"})
+
+      {:error, changeset} ->
+        {:error, changeset}
     end
   end
 
@@ -54,6 +62,11 @@ defmodule RideFastWeb.RideController do
         conn
         |> put_status(:conflict)
         |> json(%{error: "Ride is not available or already accepted"})
+
+      {:error, :driver_is_busy} ->
+        conn
+        |> put_status(:conflict)
+        |> json(%{error: "You already have an active ride. Finish it first."})
 
       {:error, :invalid_vehicle} ->
         conn

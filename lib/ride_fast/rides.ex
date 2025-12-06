@@ -55,9 +55,23 @@ defmodule RideFast.Rides do
 
   """
   def create_ride(attrs) do
-    %Ride{}
-    |> Ride.changeset(attrs)
-    |> Repo.insert()
+    user_id = attrs["user_id"] || attrs[:user_id]
+
+    if user_has_active_ride?(user_id) do
+      {:error, :user_has_active_ride}
+    else
+      %Ride{}
+      |> Ride.changeset(attrs)
+      |> Repo.insert()
+    end
+  end
+
+  defp user_has_active_ride?(user_id) do
+    query =
+      from r in Ride,
+        where: r.user_id == ^user_id and r.status in [:solicitada, :aceita, :em_andamento]
+
+    Repo.exists?(query)
   end
 
   @doc """
@@ -111,19 +125,31 @@ defmodule RideFast.Rides do
   Transição de estado: SOLICITADA -> ACEITA.
   """
   def accept_ride(%Ride{status: :solicitada} = ride, %Driver{} = driver, vehicle_id) do
-    case Vehicles.get_driver_active_vehicle(driver.id, vehicle_id) do
-      %Vehicle{} ->
-        ride
-        |> Ride.changeset(%{
-          status: :aceita,
-          driver_id: driver.id,
-          vehicle_id: vehicle_id
-        })
-        |> Repo.update()
+    if driver_has_active_ride?(driver.id) do
+      {:error, :driver_is_busy}
+    else
+      case Vehicles.get_driver_active_vehicle(driver.id, vehicle_id) do
+        %Vehicle{} ->
+          ride
+          |> Ride.changeset(%{
+            status: :aceita,
+            driver_id: driver.id,
+            vehicle_id: vehicle_id
+          })
+          |> Repo.update()
 
-      nil ->
-        {:error, :invalid_vehicle}
+        nil ->
+          {:error, :invalid_vehicle}
+      end
     end
+  end
+
+  defp driver_has_active_ride?(driver_id) do
+    query =
+      from r in Ride,
+        where: r.driver_id == ^driver_id and r.status in [:aceita, :em_andamento]
+
+    Repo.exists?(query)
   end
 
   def accept_ride(%Ride{}, _driver, _vehicle_id) do
