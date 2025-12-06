@@ -31,6 +31,8 @@ defmodule RideFastWeb.Router do
     end
 
     resources "/vehicles", VehicleController, only: [:update, :delete]
+
+    resources "/rides", RideController, only: [:create, :index, :show]
   end
 
   if Application.compile_env(:ride_fast, :dev_routes) do
