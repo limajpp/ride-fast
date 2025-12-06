@@ -7,6 +7,8 @@ defmodule RideFastWeb.Router do
 
   scope "/api", RideFastWeb do
     pipe_through :api
+    post "/login", SessionController, :create
+    resources "/users", UserController, except: [:new, :edit]
   end
 
   # Enable LiveDashboard in development

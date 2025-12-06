@@ -116,6 +116,8 @@ if config_env() == :dev do
     pool_size: 10
 
   config :ride_fast, RideFastWeb.Endpoint, secret_key_base: env!("SECRET_KEY_BASE", :string!)
-end
 
-config :ride_fast, RideFastWeb.Endpoint, http: [port: System.get_env("PORT")]
+  config :ride_fast, RideFast.Guardian,
+    issuer: "ride_fast",
+    secret_key: env!("JWT_SECRET", :string!)
+end

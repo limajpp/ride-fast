@@ -101,4 +101,19 @@ defmodule RideFast.Accounts do
   def change_user(%User{} = user, attrs \\ %{}) do
     User.changeset(user, attrs)
   end
+
+  @doc """
+  Authenticates a user by email and password.
+  """
+  def authenticate_user(email, password) do
+    user = Repo.get_by(User, email: email)
+
+    cond do
+      user && Bcrypt.verify_pass(password, user.password_hash) ->
+        {:ok, user}
+
+      true ->
+        {:error, :unauthorized}
+    end
+  end
 end

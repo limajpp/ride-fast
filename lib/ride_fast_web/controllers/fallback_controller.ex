@@ -21,4 +21,12 @@ defmodule RideFastWeb.FallbackController do
     |> put_view(html: RideFastWeb.ErrorHTML, json: RideFastWeb.ErrorJSON)
     |> render(:"404")
   end
+
+  # Clause para erro de autenticação
+  def call(conn, {:error, :unauthorized}) do
+    conn
+    |> put_status(:unauthorized)
+    |> put_view(json: RideFastWeb.ErrorJSON)
+    |> render(:"401")
+  end
 end
