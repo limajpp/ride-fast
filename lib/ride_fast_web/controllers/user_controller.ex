@@ -3,6 +3,7 @@ defmodule RideFastWeb.UserController do
 
   alias RideFast.Accounts
   alias RideFast.Accounts.User
+  alias RideFast.Guardian
 
   action_fallback RideFastWeb.FallbackController
 
@@ -39,5 +40,13 @@ defmodule RideFastWeb.UserController do
     with {:ok, %User{}} <- Accounts.delete_user(user) do
       send_resp(conn, :no_content, "")
     end
+  end
+
+  def me(conn, _params) do
+    user = Guardian.Plug.current_resource(conn)
+
+    conn
+    |> put_status(:ok)
+    |> render(:show, user: user)
   end
 end

@@ -5,13 +5,25 @@ defmodule RideFastWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/api", RideFastWeb do
-    pipe_through :api
-    post "/login", SessionController, :create
-    resources "/users", UserController, except: [:new, :edit]
+  pipeline :auth do
+    plug RideFast.Guardian.AuthPipeline
   end
 
-  # Enable LiveDashboard in development
+  scope "/api", RideFastWeb do
+    pipe_through :api
+
+    post "/login", SessionController, :create
+    post "/users", UserController, :create
+  end
+
+  scope "/api", RideFastWeb do
+    pipe_through [:api, :auth]
+
+    resources "/users", UserController, except: [:new, :edit, :create]
+
+    get "/me", UserController, :me
+  end
+
   if Application.compile_env(:ride_fast, :dev_routes) do
     # If you want to use the LiveDashboard in production, you should put
     # it behind authentication and allow only admins to access it.
