@@ -9,19 +9,20 @@ defmodule RideFastWeb.Router do
     plug RideFast.Guardian.AuthPipeline
   end
 
-  scope "/api", RideFastWeb do
+  scope "/api/v1", RideFastWeb do
     pipe_through :api
 
-    post "/login", SessionController, :create
-    post "/users", UserController, :create
+    post "/auth/register", AuthController, :register
+    post "/auth/login", AuthController, :login
   end
 
-  scope "/api", RideFastWeb do
+  scope "/api/v1", RideFastWeb do
     pipe_through [:api, :auth]
 
     resources "/users", UserController, except: [:new, :edit, :create]
-
     get "/me", UserController, :me
+
+    resources "/drivers", DriverController, except: [:new, :edit, :create]
   end
 
   if Application.compile_env(:ride_fast, :dev_routes) do
