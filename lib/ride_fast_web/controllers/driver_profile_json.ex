@@ -17,7 +17,7 @@ defmodule RideFastWeb.DriverProfileJSON do
 
   defp data(%DriverProfile{} = driver_profile) do
     %{
-      id: driver_profile.id,
+      driver_id: driver_profile.driver_id,
       license_number: driver_profile.license_number,
       license_expiry: driver_profile.license_expiry,
       background_check_ok: driver_profile.background_check_ok
