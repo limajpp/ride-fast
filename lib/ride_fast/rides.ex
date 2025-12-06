@@ -109,15 +109,25 @@ defmodule RideFast.Rides do
 
   @doc """
   Transição de estado: SOLICITADA -> ACEITA.
+  Agora valida se o veículo está ativo e pertence ao motorista.
   """
   def accept_ride(%Ride{status: :solicitada} = ride, %Driver{} = driver, vehicle_id) do
-    ride
-    |> Ride.changeset(%{
-      status: :aceita,
-      driver_id: driver.id,
-      vehicle_id: vehicle_id
-    })
-    |> Repo.update()
+    # AQUI ESTAVA FALTANDO A CHAMADA DE VALIDAÇÃO
+    case Vehicles.get_driver_active_vehicle(driver.id, vehicle_id) do
+      %Vehicle{} ->
+        # Se encontrou o veículo ativo, prossegue com o update
+        ride
+        |> Ride.changeset(%{
+          status: :aceita,
+          driver_id: driver.id,
+          vehicle_id: vehicle_id
+        })
+        |> Repo.update()
+
+      nil ->
+        # Se retornou nil, o veículo não existe, não é seu ou está inativo
+        {:error, :invalid_vehicle}
+    end
   end
 
   def accept_ride(%Ride{}, _driver, _vehicle_id) do
