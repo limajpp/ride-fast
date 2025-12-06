@@ -4,6 +4,7 @@ defmodule RideFastWeb.RideController do
   alias RideFast.Rides
   alias RideFast.Rides.Ride
   alias RideFast.Guardian
+  alias RideFast.Accounts.Driver
 
   action_fallback RideFastWeb.FallbackController
 
@@ -27,5 +28,40 @@ defmodule RideFastWeb.RideController do
   def show(conn, %{"id" => id}) do
     ride = Rides.get_ride!(id)
     render(conn, :show, ride: ride)
+  end
+
+  def accept(conn, %{"id" => id, "vehicle_id" => vehicle_id}) do
+    driver = Guardian.Plug.current_resource(conn)
+    ride = Rides.get_ride!(id)
+
+    case driver do
+      %Driver{} ->
+        handle_accept(conn, ride, driver, vehicle_id)
+
+      _ ->
+        conn
+        |> put_status(:forbidden)
+        |> json(%{error: "Only drivers can accept rides"})
+    end
+  end
+
+  defp handle_accept(conn, ride, driver, vehicle_id) do
+    case Rides.accept_ride(ride, driver, vehicle_id) do
+      {:ok, %Ride{} = ride} ->
+        render(conn, :show, ride: ride)
+
+      {:error, :ride_not_available} ->
+        conn
+        |> put_status(:conflict)
+        |> json(%{error: "Ride is not available or already accepted"})
+
+      {:error, :invalid_vehicle} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{error: "Vehicle is invalid, inactive, or does not belong to you"})
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
   end
 end

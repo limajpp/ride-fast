@@ -28,4 +28,12 @@ defmodule RideFast.Vehicles do
   def delete_vehicle(%Vehicle{} = vehicle) do
     update_vehicle(vehicle, %{active: false})
   end
+
+  @doc """
+  Busca um veículo específico de um motorista, mas APENAS se estiver ativo.
+  Retorna nil se não encontrar ou se estiver inativo (active: false).
+  """
+  def get_driver_active_vehicle(driver_id, vehicle_id) do
+    Repo.get_by(Vehicle, id: vehicle_id, driver_id: driver_id, active: true)
+  end
 end

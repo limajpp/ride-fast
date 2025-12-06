@@ -33,6 +33,8 @@ defmodule RideFastWeb.Router do
     resources "/vehicles", VehicleController, only: [:update, :delete]
 
     resources "/rides", RideController, only: [:create, :index, :show]
+
+    post "/rides/:id/accept", RideController, :accept
   end
 
   if Application.compile_env(:ride_fast, :dev_routes) do

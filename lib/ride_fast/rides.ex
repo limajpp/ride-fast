@@ -8,6 +8,11 @@ defmodule RideFast.Rides do
 
   alias RideFast.Rides.Ride
 
+  alias RideFast.Accounts.Driver
+
+  alias RideFast.Vehicles
+  alias RideFast.Vehicles.Vehicle
+
   @doc """
   Returns the list of rides.
 
@@ -100,5 +105,22 @@ defmodule RideFast.Rides do
   """
   def change_ride(%Ride{} = ride, attrs \\ %{}) do
     Ride.changeset(ride, attrs)
+  end
+
+  @doc """
+  Transição de estado: SOLICITADA -> ACEITA.
+  """
+  def accept_ride(%Ride{status: :solicitada} = ride, %Driver{} = driver, vehicle_id) do
+    ride
+    |> Ride.changeset(%{
+      status: :aceita,
+      driver_id: driver.id,
+      vehicle_id: vehicle_id
+    })
+    |> Repo.update()
+  end
+
+  def accept_ride(%Ride{}, _driver, _vehicle_id) do
+    {:error, :ride_not_available}
   end
 end
