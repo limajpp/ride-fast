@@ -35,7 +35,12 @@ defmodule RideFast.Rides.Ride do
       :dest_lng,
       :price_estimate,
       :status,
-      :user_id
+      :user_id,
+      :driver_id,
+      :vehicle_id,
+      :started_at,
+      :ended_at,
+      :final_price
     ])
     |> validate_required([
       :origin_lat,

@@ -109,13 +109,10 @@ defmodule RideFast.Rides do
 
   @doc """
   Transição de estado: SOLICITADA -> ACEITA.
-  Agora valida se o veículo está ativo e pertence ao motorista.
   """
   def accept_ride(%Ride{status: :solicitada} = ride, %Driver{} = driver, vehicle_id) do
-    # AQUI ESTAVA FALTANDO A CHAMADA DE VALIDAÇÃO
     case Vehicles.get_driver_active_vehicle(driver.id, vehicle_id) do
       %Vehicle{} ->
-        # Se encontrou o veículo ativo, prossegue com o update
         ride
         |> Ride.changeset(%{
           status: :aceita,
@@ -125,7 +122,6 @@ defmodule RideFast.Rides do
         |> Repo.update()
 
       nil ->
-        # Se retornou nil, o veículo não existe, não é seu ou está inativo
         {:error, :invalid_vehicle}
     end
   end
@@ -133,4 +129,43 @@ defmodule RideFast.Rides do
   def accept_ride(%Ride{}, _driver, _vehicle_id) do
     {:error, :ride_not_available}
   end
+
+  @doc """
+  Transição: ACEITA -> EM_ANDAMENTO
+  Valida se quem está tentando iniciar é o motorista definido na corrida.
+  """
+  def start_ride(%Ride{status: :aceita} = ride, %Driver{} = driver) do
+    if ride.driver_id == driver.id do
+      ride
+      |> Ride.changeset(%{
+        status: :em_andamento,
+        started_at: DateTime.utc_now()
+      })
+      |> Repo.update()
+    else
+      {:error, :unauthorized_driver}
+    end
+  end
+
+  def start_ride(%Ride{}, _driver), do: {:error, :ride_not_ready_to_start}
+
+  @doc """
+  Transição: EM_ANDAMENTO -> FINALIZADA
+  Recebe o preço final e conclui a corrida.
+  """
+  def complete_ride(%Ride{status: :em_andamento} = ride, %Driver{} = driver, final_price) do
+    if ride.driver_id == driver.id do
+      ride
+      |> Ride.changeset(%{
+        status: :finalizada,
+        ended_at: DateTime.utc_now(),
+        final_price: final_price
+      })
+      |> Repo.update()
+    else
+      {:error, :unauthorized_driver}
+    end
+  end
+
+  def complete_ride(%Ride{}, _driver, _final_price), do: {:error, :ride_not_in_progress}
 end

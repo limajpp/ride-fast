@@ -64,4 +64,44 @@ defmodule RideFastWeb.RideController do
         {:error, changeset}
     end
   end
+
+  def start(conn, %{"id" => id}) do
+    driver = Guardian.Plug.current_resource(conn)
+    ride = Rides.get_ride!(id)
+
+    case Rides.start_ride(ride, driver) do
+      {:ok, %Ride{} = ride} ->
+        render(conn, :show, ride: ride)
+
+      {:error, :ride_not_ready_to_start} ->
+        conn
+        |> put_status(:conflict)
+        |> json(%{error: "Ride cannot be started (must be ACCEPTED)"})
+
+      {:error, :unauthorized_driver} ->
+        conn
+        |> put_status(:forbidden)
+        |> json(%{error: "You are not the driver for this ride"})
+    end
+  end
+
+  def complete(conn, %{"id" => id, "final_price" => final_price}) do
+    driver = Guardian.Plug.current_resource(conn)
+    ride = Rides.get_ride!(id)
+
+    case Rides.complete_ride(ride, driver, final_price) do
+      {:ok, %Ride{} = ride} ->
+        render(conn, :show, ride: ride)
+
+      {:error, :ride_not_in_progress} ->
+        conn
+        |> put_status(:conflict)
+        |> json(%{error: "Ride cannot be completed (must be IN_PROGRESS)"})
+
+      {:error, :unauthorized_driver} ->
+        conn
+        |> put_status(:forbidden)
+        |> json(%{error: "You are not the driver for this ride"})
+    end
+  end
 end
