@@ -11,6 +11,8 @@ defmodule RideFast.Accounts.Driver do
 
     field :status, Ecto.Enum, values: [:online, :offline, :busy], default: :offline
 
+    has_many :vehicles, RideFast.Vehicles.Vehicle
+
     timestamps(type: :utc_datetime)
   end
 

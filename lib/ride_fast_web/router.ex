@@ -22,7 +22,11 @@ defmodule RideFastWeb.Router do
     resources "/users", UserController, except: [:new, :edit, :create]
     get "/me", UserController, :me
 
-    resources "/drivers", DriverController, except: [:new, :edit, :create]
+    resources "/drivers", DriverController, except: [:new, :edit, :create] do
+      resources "/vehicles", VehicleController, only: [:index, :create]
+    end
+
+    resources "/vehicles", VehicleController, only: [:update, :delete]
   end
 
   if Application.compile_env(:ride_fast, :dev_routes) do
