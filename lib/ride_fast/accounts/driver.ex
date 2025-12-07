@@ -12,6 +12,11 @@ defmodule RideFast.Accounts.Driver do
     field :status, Ecto.Enum, values: [:online, :offline, :busy], default: :offline
 
     has_many :vehicles, RideFast.Vehicles.Vehicle
+    has_one :profile, RideFast.Drivers.DriverProfile
+
+    many_to_many :languages, RideFast.Languages.Language,
+      join_through: "drivers_languages",
+      on_replace: :delete
 
     timestamps(type: :utc_datetime)
   end

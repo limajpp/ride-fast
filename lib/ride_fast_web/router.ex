@@ -28,7 +28,12 @@ defmodule RideFastWeb.Router do
       get "/profile", DriverProfileController, :show
       post "/profile", DriverProfileController, :create
       put "/profile", DriverProfileController, :update
+
+      post "/languages/:language_id", DriverLanguageController, :create
+      delete "/languages/:language_id", DriverLanguageController, :delete
     end
+
+    resources "/languages", LanguageController, only: [:index, :create]
 
     resources "/vehicles", VehicleController, only: [:update, :delete]
 

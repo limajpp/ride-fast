@@ -7,6 +7,7 @@ defmodule RideFast.Accounts do
   alias RideFast.Repo
 
   alias RideFast.Accounts.User
+  alias RideFast.Languages.Language
 
   @doc """
   Returns the list of users.
@@ -223,5 +224,39 @@ defmodule RideFast.Accounts do
       true ->
         {:error, :unauthorized}
     end
+  end
+
+  def get_driver_with_languages!(id) do
+    Driver
+    |> Repo.get!(id)
+    |> Repo.preload(:languages)
+  end
+
+  @doc """
+  Adiciona um idioma ao motorista.
+  Usa Changeset para garantir que não haja duplicatas na lista.
+  """
+  def add_language_to_driver(%Driver{} = driver, %Language{} = language) do
+    driver = Repo.preload(driver, :languages)
+
+    new_languages = [language | driver.languages] |> Enum.uniq_by(& &1.id)
+
+    driver
+    |> Ecto.Changeset.change()
+    |> Ecto.Changeset.put_assoc(:languages, new_languages)
+    |> Repo.update()
+  end
+
+  @doc """
+  Remove um idioma do motorista.
+  """
+  def remove_language_from_driver(%Driver{} = driver, %Language{} = language) do
+    driver = Repo.preload(driver, :languages)
+    new_languages = Enum.reject(driver.languages, fn l -> l.id == language.id end)
+
+    driver
+    |> Ecto.Changeset.change()
+    |> Ecto.Changeset.put_assoc(:languages, new_languages)
+    |> Repo.update()
   end
 end
