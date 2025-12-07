@@ -39,18 +39,6 @@ defmodule RideFast.Ratings do
   """
   def get_rating!(id), do: Repo.get!(Rating, id)
 
-  @doc """
-  Creates a rating.
-
-  ## Examples
-
-      iex> create_rating(%{field: value})
-      {:ok, %Rating{}}
-
-      iex> create_rating(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def create_rating(attrs \\ %{}) do
     ride_id = attrs["ride_id"] || attrs[:ride_id]
 

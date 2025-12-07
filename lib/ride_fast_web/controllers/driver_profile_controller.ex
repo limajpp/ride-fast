@@ -23,7 +23,7 @@ defmodule RideFastWeb.DriverProfileController do
       %DriverProfile{} ->
         conn
         |> put_status(:conflict)
-        |> json(%{error: "Profile already exists for this driver"})
+        |> json(%{error: "Perfil já existe para esse motorsta."})
 
       {:error, changeset} ->
         {:error, changeset}

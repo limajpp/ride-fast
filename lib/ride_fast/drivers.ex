@@ -37,10 +37,6 @@ defmodule RideFast.Drivers do
   """
   def get_driver_profile!(id), do: Repo.get!(DriverProfile, id)
 
-  @doc """
-  Gets a single driver_profile.
-  Returns nil if the Driver profile does not exist.
-  """
   def get_driver_profile(driver_id), do: Repo.get(DriverProfile, driver_id)
 
   @doc """

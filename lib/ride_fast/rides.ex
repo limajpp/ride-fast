@@ -44,18 +44,6 @@ defmodule RideFast.Rides do
   """
   def get_ride!(id), do: Repo.get!(Ride, id)
 
-  @doc """
-  Creates a ride.
-
-  ## Examples
-
-      iex> create_ride(%{field: value})
-      {:ok, %Ride{}}
-
-      iex> create_ride(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def create_ride(attrs) do
     user_id = attrs["user_id"] || attrs[:user_id]
 
@@ -123,9 +111,6 @@ defmodule RideFast.Rides do
     Ride.changeset(ride, attrs)
   end
 
-  @doc """
-  Transição de estado: SOLICITADA -> ACEITA.
-  """
   def accept_ride(%Ride{status: :solicitada} = ride, %Driver{} = driver, vehicle_id) do
     if driver_has_active_ride?(driver.id) do
       {:error, :driver_is_busy}
@@ -146,6 +131,10 @@ defmodule RideFast.Rides do
     end
   end
 
+  def accept_ride(%Ride{}, _driver, _vehicle_id) do
+    {:error, :ride_not_available}
+  end
+
   defp driver_has_active_ride?(driver_id) do
     query =
       from r in Ride,
@@ -154,14 +143,6 @@ defmodule RideFast.Rides do
     Repo.exists?(query)
   end
 
-  def accept_ride(%Ride{}, _driver, _vehicle_id) do
-    {:error, :ride_not_available}
-  end
-
-  @doc """
-  Transição: ACEITA -> EM_ANDAMENTO
-  Valida se quem está tentando iniciar é o motorista definido na corrida.
-  """
   def start_ride(%Ride{status: :aceita} = ride, %Driver{} = driver) do
     if ride.driver_id == driver.id do
       ride
@@ -177,10 +158,6 @@ defmodule RideFast.Rides do
 
   def start_ride(%Ride{}, _driver), do: {:error, :ride_not_ready_to_start}
 
-  @doc """
-  Transição: EM_ANDAMENTO -> FINALIZADA
-  Recebe o preço final e conclui a corrida.
-  """
   def complete_ride(%Ride{status: :em_andamento} = ride, %Driver{} = driver, final_price) do
     if ride.driver_id == driver.id do
       ride
@@ -197,10 +174,6 @@ defmodule RideFast.Rides do
 
   def complete_ride(%Ride{}, _driver, _final_price), do: {:error, :ride_not_in_progress}
 
-  @doc """
-  Cancela uma corrida.
-  Pode ser chamada pelo Passageiro (User) ou Motorista (Driver).
-  """
   def cancel_ride(%Ride{status: status} = ride, actor) when status in [:solicitada, :aceita] do
     is_owner =
       case actor do

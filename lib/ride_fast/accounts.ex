@@ -103,9 +103,6 @@ defmodule RideFast.Accounts do
     User.changeset(user, attrs)
   end
 
-  @doc """
-  Authenticates a user by email and password.
-  """
   def authenticate_user(email, password) do
     user = Repo.get_by(User, email: email)
 
@@ -232,10 +229,6 @@ defmodule RideFast.Accounts do
     |> Repo.preload(:languages)
   end
 
-  @doc """
-  Adiciona um idioma ao motorista.
-  Usa Changeset para garantir que não haja duplicatas na lista.
-  """
   def add_language_to_driver(%Driver{} = driver, %Language{} = language) do
     driver = Repo.preload(driver, :languages)
 
@@ -247,9 +240,6 @@ defmodule RideFast.Accounts do
     |> Repo.update()
   end
 
-  @doc """
-  Remove um idioma do motorista.
-  """
   def remove_language_from_driver(%Driver{} = driver, %Language{} = language) do
     driver = Repo.preload(driver, :languages)
     new_languages = Enum.reject(driver.languages, fn l -> l.id == language.id end)

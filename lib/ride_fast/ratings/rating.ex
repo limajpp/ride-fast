@@ -17,7 +17,7 @@ defmodule RideFast.Ratings.Rating do
     rating
     |> cast(attrs, [:score, :comment, :ride_id, :from_user_id, :to_driver_id])
     |> validate_required([:score, :ride_id, :from_user_id, :to_driver_id])
-    |> validate_inclusion(:score, 1..5, message: "must be between 1 and 5")
-    |> unique_constraint([:ride_id, :from_user_id], message: "You have already rated this ride")
+    |> validate_inclusion(:score, 1..5, message: "Deve estar entre 1 e 5.")
+    |> unique_constraint([:ride_id, :from_user_id], message: "Você já avaliou essa corrida.")
   end
 end

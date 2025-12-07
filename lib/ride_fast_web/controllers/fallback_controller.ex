@@ -22,7 +22,6 @@ defmodule RideFastWeb.FallbackController do
     |> render(:"404")
   end
 
-  # Clause para erro de autenticação
   def call(conn, {:error, :unauthorized}) do
     conn
     |> put_status(:unauthorized)

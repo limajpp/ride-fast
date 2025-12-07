@@ -3,7 +3,6 @@ defmodule RideFastWeb.DriverLanguageController do
 
   alias RideFast.Accounts
   alias RideFast.Languages
-  alias RideFast.Guardian
 
   action_fallback RideFastWeb.FallbackController
 
@@ -14,7 +13,7 @@ defmodule RideFastWeb.DriverLanguageController do
     with {:ok, _driver} <- Accounts.add_language_to_driver(driver, language) do
       conn
       |> put_status(:created)
-      |> json(%{message: "Language added successfully"})
+      |> json(%{message: "Idioma adicionado com sucesso!"})
     end
   end
 

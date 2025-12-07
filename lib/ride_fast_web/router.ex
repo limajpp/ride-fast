@@ -36,7 +36,7 @@ defmodule RideFastWeb.Router do
       get "/ratings", RatingController, :index_driver
     end
 
-    resources "/languages", LanguageController, only: [:index, :create]
+    resources "/languages", LanguageController, only: [:index, :create, :show]
 
     resources "/vehicles", VehicleController, only: [:update, :delete]
 

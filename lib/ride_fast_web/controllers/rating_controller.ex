@@ -27,7 +27,7 @@ defmodule RideFastWeb.RatingController do
     if ride.user_id != current_user.id do
       conn
       |> put_status(:forbidden)
-      |> json(%{error: "Only the passenger of this ride can rate it"})
+      |> json(%{error: "Apenas o passageiro dessa corrida pode avaliá-la."})
     else
       case Ratings.create_rating(rating_params) do
         {:ok, %Rating{} = rating} ->
@@ -38,7 +38,7 @@ defmodule RideFastWeb.RatingController do
         {:error, :ride_not_finished} ->
           conn
           |> put_status(:conflict)
-          |> json(%{error: "You can only rate finished rides"})
+          |> json(%{error: "Você só pode avaliar corridas finalizadas."})
 
         {:error, changeset} ->
           {:error, changeset}

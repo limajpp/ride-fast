@@ -26,7 +26,7 @@ defmodule RideFast.Drivers.DriverProfile do
       if Date.compare(date, Date.utc_today()) == :gt do
         []
       else
-        [{field, "CNH expired or invalid date"}]
+        [{field, "CNH expirada ou data inválida."}]
       end
     end)
   end

@@ -21,7 +21,7 @@ defmodule RideFastWeb.RideController do
       {:error, :user_has_active_ride} ->
         conn
         |> put_status(:conflict)
-        |> json(%{error: "You already have an active ride request"})
+        |> json(%{error: "Você já tem uma chamada de corrida ativa."})
 
       {:error, changeset} ->
         {:error, changeset}
@@ -49,7 +49,7 @@ defmodule RideFastWeb.RideController do
       _ ->
         conn
         |> put_status(:forbidden)
-        |> json(%{error: "Only drivers can accept rides"})
+        |> json(%{error: "Apenas motoristas podem aceitar corridas."})
     end
   end
 
@@ -61,17 +61,17 @@ defmodule RideFastWeb.RideController do
       {:error, :ride_not_available} ->
         conn
         |> put_status(:conflict)
-        |> json(%{error: "Ride is not available or already accepted"})
+        |> json(%{error: "Corrida não está disponível ou já foi aceitada."})
 
       {:error, :driver_is_busy} ->
         conn
         |> put_status(:conflict)
-        |> json(%{error: "You already have an active ride. Finish it first."})
+        |> json(%{error: "Você já tem uma corrida ativa, termine-a primeiro."})
 
       {:error, :invalid_vehicle} ->
         conn
         |> put_status(:unprocessable_entity)
-        |> json(%{error: "Vehicle is invalid, inactive, or does not belong to you"})
+        |> json(%{error: "Veículo é inválido ou não pertence a você."})
 
       {:error, changeset} ->
         {:error, changeset}
@@ -89,12 +89,12 @@ defmodule RideFastWeb.RideController do
       {:error, :ride_not_ready_to_start} ->
         conn
         |> put_status(:conflict)
-        |> json(%{error: "Ride cannot be started (must be ACCEPTED)"})
+        |> json(%{error: "Corrida não pode ser inicializada, pois deve ser aceita antes."})
 
       {:error, :unauthorized_driver} ->
         conn
         |> put_status(:forbidden)
-        |> json(%{error: "You are not the driver for this ride"})
+        |> json(%{error: "Você não é o motorista dessa corrida."})
     end
   end
 
@@ -109,12 +109,12 @@ defmodule RideFastWeb.RideController do
       {:error, :ride_not_in_progress} ->
         conn
         |> put_status(:conflict)
-        |> json(%{error: "Ride cannot be completed (must be IN_PROGRESS)"})
+        |> json(%{error: "Corrida não pode ser finalizada, pois deve estar em andamento."})
 
       {:error, :unauthorized_driver} ->
         conn
         |> put_status(:forbidden)
-        |> json(%{error: "You are not the driver for this ride"})
+        |> json(%{error: "Você não é o motorista dessa corrida."})
     end
   end
 
@@ -129,12 +129,12 @@ defmodule RideFastWeb.RideController do
       {:error, :unauthorized_action} ->
         conn
         |> put_status(:forbidden)
-        |> json(%{error: "You are not authorized to cancel this ride"})
+        |> json(%{error: "Você não está autorizado a cancelar essa corrida."})
 
       {:error, :cannot_cancel_at_this_stage} ->
         conn
         |> put_status(:conflict)
-        |> json(%{error: "Ride cannot be cancelled at this stage"})
+        |> json(%{error: "A corrida não pode ser cancelada nesse estágio."})
     end
   end
 

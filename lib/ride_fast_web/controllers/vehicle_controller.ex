@@ -3,7 +3,6 @@ defmodule RideFastWeb.VehicleController do
 
   alias RideFast.Vehicles
   alias RideFast.Vehicles.Vehicle
-  alias RideFast.Guardian
 
   action_fallback RideFastWeb.FallbackController
 

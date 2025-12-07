@@ -26,7 +26,7 @@ defmodule RideFastWeb.AuthController do
   def register(conn, _params) do
     conn
     |> put_status(:bad_request)
-    |> json(%{error: "Invalid or missing role. Must be 'user' or 'driver'."})
+    |> json(%{error: "Tipo inválido ou faltante. Deve ser 'user' ou 'driver'."})
   end
 
   def login(conn, %{"email" => email, "password" => password}) do
