@@ -7,6 +7,7 @@ defmodule RideFast.Accounts.User do
     field :email, :string
     field :phone, :string
     field :password_hash, :string
+    field :active, :boolean, default: true
     field :password, :string, virtual: true
 
     timestamps(type: :utc_datetime)
@@ -15,12 +16,19 @@ defmodule RideFast.Accounts.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:name, :email, :phone, :password])
-    |> validate_required([:name, :email, :password])
-    |> validate_format(:email, ~r/@/) # Regex de e-mail.
+    |> cast(attrs, [:name, :email, :phone, :password, :active])
+    |> validate_required([:name, :email])
+    # Regex de e-mail.
+    |> validate_format(:email, ~r/@/)
     |> validate_length(:password, min: 6)
     |> unique_constraint(:email)
     |> put_password_hash()
+  end
+
+  def registration_changeset(user, attrs) do
+    user
+    |> changeset(attrs)
+    |> validate_required([:password])
   end
 
   defp put_password_hash(changeset) do
