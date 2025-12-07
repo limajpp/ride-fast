@@ -137,4 +137,10 @@ defmodule RideFastWeb.RideController do
         |> json(%{error: "Ride cannot be cancelled at this stage"})
     end
   end
+
+  def delete(conn, %{"id" => id}) do
+    ride = Rides.get_ride!(id)
+    {:ok, _ride} = Rides.delete_ride(ride)
+    send_resp(conn, :no_content, "")
+  end
 end

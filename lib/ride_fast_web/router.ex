@@ -22,22 +22,26 @@ defmodule RideFastWeb.Router do
     resources "/users", UserController, except: [:new, :edit, :create]
     get "/me", UserController, :me
 
-    resources "/drivers", DriverController, except: [:new, :edit, :create] do
+    resources "/drivers", DriverController, except: [:new, :edit] do
       resources "/vehicles", VehicleController, only: [:index, :create]
 
       get "/profile", DriverProfileController, :show
       post "/profile", DriverProfileController, :create
       put "/profile", DriverProfileController, :update
 
+      get "/languages", DriverLanguageController, :index
       post "/languages/:language_id", DriverLanguageController, :create
       delete "/languages/:language_id", DriverLanguageController, :delete
+
+      get "/ratings", RatingController, :index_driver
     end
 
     resources "/languages", LanguageController, only: [:index, :create]
 
     resources "/vehicles", VehicleController, only: [:update, :delete]
 
-    resources "/rides", RideController, only: [:create, :index, :show] do
+    resources "/rides", RideController, only: [:create, :index, :show, :delete] do
+      get "/ratings", RatingController, :index_ride
       post "/ratings", RatingController, :create
     end
 

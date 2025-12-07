@@ -117,4 +117,9 @@ defmodule RideFast.Ratings do
   def change_rating(%Rating{} = rating, attrs \\ %{}) do
     Rating.changeset(rating, attrs)
   end
+
+  def list_driver_ratings(driver_id) do
+    from(r in Rating, where: r.to_driver_id == ^driver_id)
+    |> Repo.all()
+  end
 end
