@@ -117,4 +117,24 @@ defmodule RideFastWeb.RideController do
         |> json(%{error: "You are not the driver for this ride"})
     end
   end
+
+  def cancel(conn, %{"id" => id}) do
+    actor = Guardian.Plug.current_resource(conn)
+    ride = Rides.get_ride!(id)
+
+    case Rides.cancel_ride(ride, actor) do
+      {:ok, %Ride{} = ride} ->
+        render(conn, :show, ride: ride)
+
+      {:error, :unauthorized_action} ->
+        conn
+        |> put_status(:forbidden)
+        |> json(%{error: "You are not authorized to cancel this ride"})
+
+      {:error, :cannot_cancel_at_this_stage} ->
+        conn
+        |> put_status(:conflict)
+        |> json(%{error: "Ride cannot be cancelled at this stage"})
+    end
+  end
 end

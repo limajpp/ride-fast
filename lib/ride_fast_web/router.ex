@@ -37,6 +37,7 @@ defmodule RideFastWeb.Router do
     post "/rides/:id/accept", RideController, :accept
     post "/rides/:id/start", RideController, :start
     post "/rides/:id/complete", RideController, :complete
+    post "/rides/:id/cancel", RideController, :cancel
   end
 
   if Application.compile_env(:ride_fast, :dev_routes) do

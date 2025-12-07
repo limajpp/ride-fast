@@ -13,6 +13,8 @@ defmodule RideFast.Rides do
   alias RideFast.Vehicles
   alias RideFast.Vehicles.Vehicle
 
+  alias RideFast.Accounts.User
+
   @doc """
   Returns the list of rides.
 
@@ -194,4 +196,27 @@ defmodule RideFast.Rides do
   end
 
   def complete_ride(%Ride{}, _driver, _final_price), do: {:error, :ride_not_in_progress}
+
+  @doc """
+  Cancela uma corrida.
+  Pode ser chamada pelo Passageiro (User) ou Motorista (Driver).
+  """
+  def cancel_ride(%Ride{status: status} = ride, actor) when status in [:solicitada, :aceita] do
+    is_owner =
+      case actor do
+        %User{id: id} -> ride.user_id == id
+        %Driver{id: id} -> ride.driver_id == id
+        _ -> false
+      end
+
+    if is_owner do
+      ride
+      |> Ride.changeset(%{status: :cancelada, ended_at: DateTime.utc_now()})
+      |> Repo.update()
+    else
+      {:error, :unauthorized_action}
+    end
+  end
+
+  def cancel_ride(%Ride{}, _actor), do: {:error, :cannot_cancel_at_this_stage}
 end
