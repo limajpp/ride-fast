@@ -73,34 +73,14 @@ defmodule RideFast.Accounts do
 
   alias RideFast.Accounts.Driver
 
-  @doc """
-  Returns the list of drivers.
-
-  ## Examples
-
-      iex> list_drivers()
-      [%Driver{}, ...]
-
-  """
   def list_drivers do
-    Repo.all(Driver)
+    from(d in Driver, where: d.active == true)
+    |> Repo.all()
   end
 
-  @doc """
-  Gets a single driver.
-
-  Raises `Ecto.NoResultsError` if the Driver does not exist.
-
-  ## Examples
-
-      iex> get_driver!(123)
-      %Driver{}
-
-      iex> get_driver!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_driver!(id), do: Repo.get!(Driver, id)
+  def get_driver!(id) do
+    Repo.get_by!(Driver, id: id, active: true)
+  end
 
   def create_driver(attrs) do
     %Driver{}
@@ -126,20 +106,8 @@ defmodule RideFast.Accounts do
     |> Repo.update()
   end
 
-  @doc """
-  Deletes a driver.
-
-  ## Examples
-
-      iex> delete_driver(driver)
-      {:ok, %Driver{}}
-
-      iex> delete_driver(driver)
-      {:error, %Ecto.Changeset{}}
-
-  """
   def delete_driver(%Driver{} = driver) do
-    Repo.delete(driver)
+    update_driver(driver, %{active: false})
   end
 
   @doc """
@@ -156,7 +124,7 @@ defmodule RideFast.Accounts do
   end
 
   def authenticate_driver(email, password) do
-    driver = Repo.get_by(Driver, email: email)
+    driver = Repo.get_by(Driver, email: email, active: true)
 
     cond do
       driver && Bcrypt.verify_pass(password, driver.password_hash) ->

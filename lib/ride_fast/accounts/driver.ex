@@ -10,6 +10,7 @@ defmodule RideFast.Accounts.Driver do
     field :password_hash, :string
 
     field :status, Ecto.Enum, values: [:online, :offline, :busy], default: :offline
+    field :active, :boolean, default: true
 
     has_many :vehicles, RideFast.Vehicles.Vehicle
     has_one :profile, RideFast.Drivers.DriverProfile
@@ -24,7 +25,7 @@ defmodule RideFast.Accounts.Driver do
   @doc false
   def changeset(driver, attrs) do
     driver
-    |> cast(attrs, [:name, :email, :phone, :password, :status])
+    |> cast(attrs, [:name, :email, :phone, :password, :status, :active])
     |> validate_required([:name, :email])
     |> validate_format(:email, ~r/@/)
     |> validate_length(:password, min: 6)
