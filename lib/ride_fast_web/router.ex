@@ -32,7 +32,9 @@ defmodule RideFastWeb.Router do
 
     resources "/vehicles", VehicleController, only: [:update, :delete]
 
-    resources "/rides", RideController, only: [:create, :index, :show]
+    resources "/rides", RideController, only: [:create, :index, :show] do
+      post "/ratings", RatingController, :create
+    end
 
     post "/rides/:id/accept", RideController, :accept
     post "/rides/:id/start", RideController, :start
