@@ -15,7 +15,6 @@ defmodule RideFastWeb.DriverController do
     with {:ok, %Driver{} = driver} <- Accounts.create_driver(driver_params) do
       conn
       |> put_status(:created)
-      |> put_resp_header("location", ~p"/api/drivers/#{driver}")
       |> render(:show, driver: driver)
     end
   end

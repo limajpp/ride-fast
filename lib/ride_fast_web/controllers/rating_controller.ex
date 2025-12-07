@@ -71,4 +71,9 @@ defmodule RideFastWeb.RatingController do
     ratings = Ratings.list_driver_ratings(driver_id)
     render(conn, :index, ratings: ratings)
   end
+
+  def index_ride(conn, %{"ride_id" => ride_id}) do
+    ratings = Ratings.list_ride_ratings(ride_id)
+    render(conn, :index, ratings: ratings)
+  end
 end

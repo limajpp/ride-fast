@@ -140,7 +140,8 @@ defmodule RideFastWeb.RideController do
 
   def delete(conn, %{"id" => id}) do
     ride = Rides.get_ride!(id)
-    {:ok, _ride} = Rides.delete_ride(ride)
-    send_resp(conn, :no_content, "")
+    with {:ok, %Ride{}} <- Rides.delete_ride(ride) do
+      send_resp(conn, :no_content, "")
+    end
   end
 end

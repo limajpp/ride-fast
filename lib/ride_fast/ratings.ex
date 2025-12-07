@@ -122,4 +122,9 @@ defmodule RideFast.Ratings do
     from(r in Rating, where: r.to_driver_id == ^driver_id)
     |> Repo.all()
   end
+
+  def list_ride_ratings(ride_id) do
+    from(r in Rating, where: r.ride_id == ^ride_id)
+    |> Repo.all()
+  end
 end
