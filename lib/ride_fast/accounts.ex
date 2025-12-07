@@ -102,21 +102,9 @@ defmodule RideFast.Accounts do
   """
   def get_driver!(id), do: Repo.get!(Driver, id)
 
-  @doc """
-  Creates a driver.
-
-  ## Examples
-
-      iex> create_driver(%{field: value})
-      {:ok, %Driver{}}
-
-      iex> create_driver(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def create_driver(attrs) do
     %Driver{}
-    |> Driver.changeset(attrs)
+    |> Driver.registration_changeset(attrs)
     |> Repo.insert()
   end
 
